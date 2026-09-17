@@ -40,14 +40,14 @@ const seed = {
   phrasal: [],
   collocations: [],
   pronunciation: [
-    ["Schwa /ə/", "The most common weak vowel sound in English.", "Practice unstressed syllables in common words like about and support."],
+    ["Schwa /É™/", "The most common weak vowel sound in English.", "Practice unstressed syllables in common words like about and support."],
     ["Word Stress", "One syllable is stronger in multi-syllable words.", "Mark stress before drilling business vocabulary."],
     ["Sentence Stress", "Content words usually carry the main meaning.", "Have the student repeat the sentence with stress on different words."],
     ["Intonation in Questions", "Yes/no questions often rise; wh-questions often fall.", "Compare 'Are you ready?' and 'Where do you work?'"],
     ["Connected Speech", "Words link together in natural speech.", "Drill phrases like 'want to' and 'going to' in context."],
-    ["Minimal Pairs: /i:/ vs /ɪ/", "Contrast sheep/ship and leave/live.", "Use quick listen-and-point practice."],
+    ["Minimal Pairs: /i:/ vs /Éª/", "Contrast sheep/ship and leave/live.", "Use quick listen-and-point practice."],
     ["Final Consonants", "Many learners drop final consonants.", "Use short phrases where final sounds affect meaning."],
-    ["TH Sounds", "Practice /θ/ and /ð/ in think, this, and although.", "Contrast with /t/, /d/, /s/, and /z/ depending on L1."],
+    ["TH Sounds", "Practice /Î¸/ and /Ã°/ in think, this, and although.", "Contrast with /t/, /d/, /s/, and /z/ depending on L1."],
     ["Vowel Length", "Long and short vowels can change meaning.", "Drill beat/bit, pool/pull, cart/cut."],
     ["Linking R", "Some accents link final r to a following vowel.", "Useful for listening comprehension, not required for all accents."]
   ].map((p, i) => ({ id: `pr${i+1}`, title: p[0], description: p[1], tip: p[2] })),
@@ -183,7 +183,7 @@ const grammarDetails = {
   "Verbs": ["word showing action/state", "She teaches. They are ready.", "Express actions, states, events, and time.", "Wrong tense or missing auxiliary.", "Ask: action or state? now, past, or future?"],
   "Objects": ["receiver of the verb", "She explained the answer.", "Identify who or what receives an action.", "Confusing subject and object pronouns.", "Ask: subject did what to whom/what?"],
   "Complements": ["word/phrase completing subject or object meaning", "She is confident. They elected him leader.", "Complete the meaning after linking verbs or object structures.", "Treating complements like objects.", "Contrast action verbs with linking verbs."],
-  "Zero Conditional": ["if/when + present, present", "If water reaches 100°C, it boils.", "Talk about facts, rules, and repeated results.", "Using will in the result for general facts.", "Use science, routines, or workplace rules."],
+  "Zero Conditional": ["if/when + present, present", "If water reaches 100Â°C, it boils.", "Talk about facts, rules, and repeated results.", "Using will in the result for general facts.", "Use science, routines, or workplace rules."],
   "First Conditional": ["if + present, will/can/may + base verb", "If you practice, you will improve.", "Talk about real future possibilities.", "Using will in the if-clause.", "Ask realistic future consequence questions."],
   "Second Conditional": ["if + past, would/could + base verb", "If I had more time, I would study daily.", "Talk about imaginary present/future situations.", "Using present form for unreal situations.", "Ask dream-job or advice scenarios."],
   "Third Conditional": ["if + past perfect, would have + past participle", "If I had prepared, I would have passed.", "Talk about past regrets or unreal past results.", "Mixing past simple with would have.", "Use regret and lesson-learned prompts."],
@@ -436,7 +436,7 @@ function studentBrain(s) {
   const previous = state.classes.filter(c => c.studentId === s.id && c.status === "Completed").slice(0, 2);
   const next = suggestNext(s);
   return `<article class="card" style="margin-top:10px">
-    <strong>${s.name}</strong><div class="muted small">${s.level} · ${s.platform}</div>
+    <strong>${s.name}</strong><div class="muted small">${s.level} Â· ${s.platform}</div>
     <div style="margin-top:8px">${s.grammar.map(g => `<span class="tag">${g.topic}: ${g.status}</span>`).join("")}</div>
     <p class="small"><b>Previous:</b> ${previous.map(p => p.lesson).join(", ") || "No completed lessons yet."}</p>
     <p class="small"><b>Suggested next:</b> ${next}</p>
@@ -453,7 +453,7 @@ function nextClassPanel(classes) {
   const next = classes.find(c => c.status !== "Completed" && c.status !== "Cancelled");
   if (!next) return `<h3>Next Class</h3><div class="empty">No upcoming class left today.</div>`;
   const s = classStudent(next);
-  return `<h3>Next Class</h3><div class="focus-block"><strong>${next.start} · ${s?.name || "Student"}</strong><p>${next.lesson || "No lesson selected yet"}</p><span class="tag">${next.platform}</span><span class="tag">${s?.cefr || "No CEFR"}</span></div>`;
+  return `<h3>Next Class</h3><div class="focus-block"><strong>${next.start} Â· ${s?.name || "Student"}</strong><p>${next.lesson || "No lesson selected yet"}</p><span class="tag">${next.platform}</span><span class="tag">${s?.cefr || "No CEFR"}</span></div>`;
 }
 function scratchpadPanel() {
   const latest = latestDashboardNote();
@@ -470,10 +470,10 @@ function studentsToReviewPanel() {
   return `<h3>Student Weakness Review</h3><p class="panel-note">Pulled from each student's Grammar Focus list. Use it to decide who needs review soon.</p>${rows.length ? rows.map(row => `<div class="mini-row"><b>${row.student.name}</b><span>${row.issues.map(i => i.topic).join(", ")}</span></div>`).join("") : `<div class="empty">No review flags yet.</div>`}`;
 }
 function lessonPrepPanel(rows) {
-  return `<h3>Missing Class Prep</h3><p class="panel-note">Checks today's scheduled classes for missing lesson, topic, or grammar focus fields.</p>${rows.length ? rows.map(c => `<div class="mini-row"><b>${studentName(c.studentId)}</b><span>${c.start} · missing lesson/topic/grammar detail</span></div>`).join("") : `<div class="empty">All of today's classes have prep details.</div>`}`;
+  return `<h3>Missing Class Prep</h3><p class="panel-note">Checks today's scheduled classes for missing lesson, topic, or grammar focus fields.</p>${rows.length ? rows.map(c => `<div class="mini-row"><b>${studentName(c.studentId)}</b><span>${c.start} Â· missing lesson/topic/grammar detail</span></div>`).join("") : `<div class="empty">All of today's classes have prep details.</div>`}`;
 }
 function noteGapsPanel(rows) {
-  return `<h3>Post-Class Follow-Ups</h3><p class="panel-note">Completed classes appear here when notes, homework, or the next-topic field is still blank.</p>${rows.length ? rows.slice(0, 6).map(c => `<div class="mini-row"><b>${studentName(c.studentId)}</b><span>${formatDate(c.date)} · ${c.lesson || "Untitled class"}</span></div>`).join("") : `<div class="empty">No completed classes need notes.</div>`}`;
+  return `<h3>Post-Class Follow-Ups</h3><p class="panel-note">Completed classes appear here when notes, homework, or the next-topic field is still blank.</p>${rows.length ? rows.slice(0, 6).map(c => `<div class="mini-row"><b>${studentName(c.studentId)}</b><span>${formatDate(c.date)} Â· ${c.lesson || "Untitled class"}</span></div>`).join("") : `<div class="empty">No completed classes need notes.</div>`}`;
 }
 function weekSnapshotPanel(week) {
   const cancelled = week.filter(c => ["Cancelled", "No-show"].includes(c.status)).length;
@@ -491,7 +491,7 @@ function grammarQueuePanel() {
 }
 function recentHistoryPanel() {
   const rows = state.classes.filter(c => c.status === "Completed").sort((a,b) => b.date.localeCompare(a.date) || b.start.localeCompare(a.start)).slice(0, 5);
-  return `<h3>Recent Teaching History</h3>${rows.length ? rows.map(c => `<div class="mini-row"><b>${studentName(c.studentId)}</b><span>${formatDate(c.date)} · ${c.lesson || "Untitled class"}</span></div>`).join("") : `<div class="empty">No completed classes yet.</div>`}`;
+  return `<h3>Recent Teaching History</h3>${rows.length ? rows.map(c => `<div class="mini-row"><b>${studentName(c.studentId)}</b><span>${formatDate(c.date)} Â· ${c.lesson || "Untitled class"}</span></div>`).join("") : `<div class="empty">No completed classes yet.</div>`}`;
 }
 function recentVocabularyPanel() {
   const rows = state.vocabulary.slice(0, 6);
@@ -512,13 +512,13 @@ function studentsView() {
   return `
     <div class="page-head"><div><h2>Students</h2><p>Profiles connect platforms, history, weaknesses, progress, and next lesson ideas.</p></div><button class="primary-action" data-action="add-student">Add Student</button></div>
     <div class="split">
-      <aside class="list">${state.students.map(st => `<button class="list-button ${st.id === s.id ? "active" : ""}" data-student="${st.id}"><b>${st.name}</b><br><span class="muted small">${st.platform} · ${st.cefr} · ${st.goal}</span></button>`).join("")}</aside>
+      <aside class="list">${state.students.map(st => `<button class="list-button ${st.id === s.id ? "active" : ""}" data-student="${st.id}"><b>${st.name}</b><br><span class="muted small">${st.platform} Â· ${st.cefr} Â· ${st.goal}</span></button>`).join("")}</aside>
       <section class="grid">
         <div class="panel">
-          <div class="page-head"><div><h2>${s.name}</h2><p>${s.level} · ${s.cefr} · ${s.platform} · ${s.timezone}</p></div><div class="row-actions"><button class="secondary-action" data-log-student="${s.id}">Log Class</button><button class="ghost-action" data-edit-student="${s.id}">Edit</button><button class="danger-action" data-delete-student="${s.id}">Delete</button></div></div>
+          <div class="page-head"><div><h2>${s.name}</h2><p>${s.level} Â· ${s.cefr} Â· ${s.platform} Â· ${s.timezone}</p></div><div class="row-actions"><button class="secondary-action" data-log-student="${s.id}">Log Class</button><button class="ghost-action" data-edit-student="${s.id}">Edit</button><button class="danger-action" data-delete-student="${s.id}">Delete</button></div></div>
           <div class="grid two">
             <div><h3>Profile</h3><p><b>Goal:</b> ${s.goal}</p><p><b>Occupation:</b> ${s.occupation}</p><p><b>Preferred topics:</b> ${s.topics}</p><p><b>Notes:</b> ${s.notes}</p></div>
-            <div><h3>Weaknesses</h3><p>${s.weaknesses}</p><h3>Grammar Focus</h3>${s.grammar.map(g => `<span class="tag">${g.topic} — ${g.status}</span>`).join("")}</div>
+            <div><h3>Weaknesses</h3><p>${s.weaknesses}</p><h3>Grammar Focus</h3>${s.grammar.map(g => `<span class="tag">${g.topic} â€” ${g.status}</span>`).join("")}</div>
           </div>
         </div>
         <div class="grid two">
@@ -531,7 +531,7 @@ function studentsView() {
 function historyFor(studentId) {
   const list = state.classes.filter(c => c.studentId === studentId).sort((a,b) => b.date.localeCompare(a.date) || b.start.localeCompare(a.start));
   if (!list.length) return `<div class="empty">No teaching history yet.</div>`;
-  return list.map(c => `<div class="card"><div class="section-head"><b>${formatDate(c.date)} · ${c.lesson || "Untitled class"}</b><div class="row-actions"><button class="ghost-action" data-edit-class="${c.id}">Edit</button><button class="danger-action" data-delete-class="${c.id}">Delete</button></div></div><p class="small">${c.notes || c.topic || ""}</p><span class="tag">${c.grammar || "No grammar focus"}</span><span class="tag">${c.status}</span><p class="small"><b>Next:</b> ${c.followup || "Choose after class."}</p></div>`).join("");
+  return list.map(c => `<div class="card"><div class="section-head"><b>${formatDate(c.date)} Â· ${c.lesson || "Untitled class"}</b><div class="row-actions"><button class="ghost-action" data-edit-class="${c.id}">Edit</button><button class="danger-action" data-delete-class="${c.id}">Delete</button></div></div><p class="small">${c.notes || c.topic || ""}</p><span class="tag">${c.grammar || "No grammar focus"}</span><span class="tag">${c.status}</span><p class="small"><b>Next:</b> ${c.followup || "Choose after class."}</p></div>`).join("");
 }
 function progressFor(progress) {
   return Object.entries(progress).map(([k,v]) => `<div class="progress-row"><span>${k}</span><div class="bar"><span style="width:${v}%"></span></div><b>${v}</b></div>`).join("");
@@ -558,10 +558,6 @@ function grammarView() {
   <section class="panel">
     <div class="section-tabs">${cats.map(c => `<button class="${c === g.category ? "active" : ""}" data-grammar-cat="${c}">${c}</button>`).join("")}</div>
     <div class="grammar-tree">${state.grammar.filter(x => x.category === g.category).map(x => `<button class="grammar-node ${x.id === g.id ? "active" : ""}" data-grammar="${x.id}"><h4>${x.name}</h4><p class="small muted">${x.what || x.use}</p><p class="grammar-example"><b>Examples:</b> ${(x.examples || [x.example]).slice(0, 2).join(" / ")}</p><p class="grammar-mistake"><b>Watch:</b> ${x.mistake}</p></button>`).join("")}</div>
-  </section>
-  <section class="panel" style="margin-top:16px">
-    <h3>Tense Matrix</h3>
-    <div class="compact-grid">${grammarRows.map(row => `<button class="list-button" data-grammar-name="${row[0]}"><b>${row[0]}</b><br><span class="small muted">${row[1]}</span></button>`).join("")}</div>
   </section>
   <section class="panel" style="margin-top:16px">
     <div class="page-head"><div><h2>${g.name}</h2><p>${g.what}</p></div></div>
@@ -592,7 +588,7 @@ function notesView() {
 function noteCard(note) {
   const student = note.studentId ? studentName(note.studentId) : "No student linked";
   const className = note.classId ? (state.classes.find(c => c.id === note.classId)?.lesson || "Linked class") : "No class linked";
-  return `<article class="note-card"><div class="section-head"><div><h3>${note.title || "Untitled note"}</h3><p class="panel-note">${student} · ${className} · Updated ${formatDateTime(note.updatedAt)}</p></div><div class="row-actions"><button class="ghost-action" data-edit-note="${note.id}">Edit</button><button class="danger-action" data-delete-note="${note.id}">Delete</button></div></div><p>${escapeHtml(note.body || "").replace(/\n/g, "<br>")}</p></article>`;
+  return `<article class="note-card"><div class="section-head"><div><h3>${note.title || "Untitled note"}</h3><p class="panel-note">${student} Â· ${className} Â· Updated ${formatDateTime(note.updatedAt)}</p></div><div class="row-actions"><button class="ghost-action" data-edit-note="${note.id}">Edit</button><button class="danger-action" data-delete-note="${note.id}">Delete</button></div></div><p>${escapeHtml(note.body || "").replace(/\n/g, "<br>")}</p></article>`;
 }
 function vocabularyTable() {
   if (!state.vocabulary.length) return `<div class="empty">No vocabulary yet. Add words from class notes or company lessons.</div>`;
@@ -858,7 +854,7 @@ function readableFetchFailure(error) {
 }
 
 function openLogModal(studentId = "", existing = null) {
-  modal(`<div class="modal-head"><div><h2>Post-Class Quick Log</h2><p class="muted">Designed to finish in under two minutes.</p></div><button class="close" data-close>×</button></div>
+  modal(`<div class="modal-head"><div><h2>Post-Class Quick Log</h2><p class="muted">Designed to finish in under two minutes.</p></div><button class="close" data-close>Ã—</button></div>
   <form id="logForm" class="form-grid">
     ${field("date","Date","date", existing?.date || DAY)}${field("start","Start Time","time", existing?.start || "09:00")}${field("end","End Time","time", existing?.end || "09:30")}
     <div class="field"><label>Student</label><select name="studentId">${state.students.map(s => `<option value="${s.id}" ${s.id === (existing?.studentId || studentId) ? "selected" : ""}>${s.name}</option>`)}</select></div>
@@ -902,7 +898,7 @@ function deleteClass(classId) {
 }
 function openStudentModal(studentId = null) {
   const existing = state.students.find(s => s.id === studentId);
-  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Student" : "Add Student"}</h2><p class="muted">Create or update a student profile with goals and known weak areas.</p></div><button class="close" data-close>×</button></div>
+  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Student" : "Add Student"}</h2><p class="muted">Create or update a student profile with goals and known weak areas.</p></div><button class="close" data-close>Ã—</button></div>
   <form id="studentForm" class="form-grid">
     ${field("name","Student Name","text", existing?.name || "")}${field("email","Email","email", existing?.email || "")}
     <div class="field"><label>Platform / Company</label><select name="platform">${state.platforms.map(p => `<option ${p === existing?.platform ? "selected" : ""}>${p}</option>`)}</select></div>
@@ -941,7 +937,7 @@ function openProgressModal(studentId) {
   const student = state.students.find(s => s.id === studentId);
   if (!student) return;
   student.progress = student.progress || defaultProgress();
-  modal(`<div class="modal-head"><div><h2>Edit Progress</h2><p class="muted">Use simple 0-100 progress estimates. These are for your own tracking, not official scores.</p></div><button class="close" data-close>×</button></div>
+  modal(`<div class="modal-head"><div><h2>Edit Progress</h2><p class="muted">Use simple 0-100 progress estimates. These are for your own tracking, not official scores.</p></div><button class="close" data-close>Ã—</button></div>
   <form id="progressForm" class="form-grid">${Object.entries(student.progress).map(([key, value]) => `<div class="field"><label>${key}</label><input type="number" min="0" max="100" name="${key}" value="${value}"></div>`).join("")}
   <div class="actions wide"><button type="button" class="ghost-action" data-close>Cancel</button><button class="primary-action">Save Progress</button></div></form>`);
   $("progressForm").addEventListener("submit", e => {
@@ -954,7 +950,7 @@ function openProgressModal(studentId) {
 function openLessonModal(base = {}) {
   const existing = base?.id ? state.lessons.find(l => l.id === base.id) : null;
   base = existing || base || {};
-  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Lesson" : "Add Lesson"}</h2><p class="muted">Add lessons from your company materials. Keep only the fields you actually use.</p></div><button class="close" data-close>×</button></div>
+  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Lesson" : "Add Lesson"}</h2><p class="muted">Add lessons from your company materials. Keep only the fields you actually use.</p></div><button class="close" data-close>Ã—</button></div>
   <form id="lessonForm" class="form-grid">
     ${field("title","Title","text", base.title || "")}${field("level","Level","text", base.level || "B1")}
     ${field("category","Category","text", base.category || "Grammar")}${field("duration","Estimated Duration","number", base.duration || 30)}
@@ -980,11 +976,11 @@ function deleteLesson(id) {
 function openLesson(id) {
   const l = state.lessons.find(x => x.id === id);
   if (!l) return;
-  modal(`<div class="modal-head"><div><h2>${l.title}</h2><p class="muted">${l.category} · ${l.level} · ${l.duration} min</p></div><button class="close" data-close>×</button></div><div class="grid two"><div><h3>Objective</h3><p>${l.description}</p><h3>Warm-up</h3><p>${l.warmup}</p><h3>Presentation / Practice</h3><p>${l.practice}</p></div><div><h3>Target Grammar</h3><p>${l.grammar}</p><h3>Vocabulary</h3><p>${l.vocabulary}</p><h3>Homework</h3><p>${l.homework}</p>${l.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div></div>`);
+  modal(`<div class="modal-head"><div><h2>${l.title}</h2><p class="muted">${l.category} Â· ${l.level} Â· ${l.duration} min</p></div><button class="close" data-close>Ã—</button></div><div class="grid two"><div><h3>Objective</h3><p>${l.description}</p><h3>Warm-up</h3><p>${l.warmup}</p><h3>Presentation / Practice</h3><p>${l.practice}</p></div><div><h3>Target Grammar</h3><p>${l.grammar}</p><h3>Vocabulary</h3><p>${l.vocabulary}</p><h3>Homework</h3><p>${l.homework}</p>${l.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div></div>`);
 }
 function openVocabModal(id = null) {
   const existing = state.vocabulary.find(v => v.id === id);
-  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Word" : "Add Word"}</h2><p class="muted">Save vocabulary that was taught, explained, or noticed in class.</p></div><button class="close" data-close>×</button></div>
+  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Word" : "Add Word"}</h2><p class="muted">Save vocabulary that was taught, explained, or noticed in class.</p></div><button class="close" data-close>Ã—</button></div>
   <form id="vocabForm" class="form-grid">
     ${field("word","Word","text", existing?.word || "")}
     ${field("part","Part of Speech","text", existing?.part || "")}
@@ -1005,7 +1001,7 @@ function openVocabModal(id = null) {
 }
 function openIdiomModal(id = null) {
   const existing = state.idioms.find(i => i.id === id);
-  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Idiom" : "Add Idiom"}</h2><p class="muted">Save expressions as they come up in class.</p></div><button class="close" data-close>×</button></div>
+  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Idiom" : "Add Idiom"}</h2><p class="muted">Save expressions as they come up in class.</p></div><button class="close" data-close>Ã—</button></div>
   <form id="idiomForm" class="form-grid">
     ${field("idiom","Idiom","text", existing?.idiom || "")}
     ${field("register","Register","text", existing?.register || "Neutral")}
@@ -1026,11 +1022,11 @@ function openIdiomModal(id = null) {
 }
 function openNoteModal(id = null) {
   const existing = state.notes.find(n => n.id === id);
-  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Note" : "Add Note"}</h2><p class="muted">Save a dashboard reminder, teaching note, or student/class note.</p></div><button class="close" data-close>×</button></div>
+  modal(`<div class="modal-head"><div><h2>${existing ? "Edit Note" : "Add Note"}</h2><p class="muted">Save a dashboard reminder, teaching note, or student/class note.</p></div><button class="close" data-close>Ã—</button></div>
   <form id="noteForm" class="form-grid">
     ${field("title","Title","text", existing?.title || "")}
     <div class="field"><label>Student Link</label><select name="studentId"><option value="">No student</option>${state.students.map(s => `<option value="${s.id}" ${s.id === existing?.studentId ? "selected" : ""}>${s.name}</option>`)}</select></div>
-    <div class="field wide"><label>Class Link</label><select name="classId"><option value="">No class</option>${state.classes.map(c => `<option value="${c.id}" ${c.id === existing?.classId ? "selected" : ""}>${c.date} · ${studentName(c.studentId)} · ${c.lesson || "Untitled class"}</option>`)}</select></div>
+    <div class="field wide"><label>Class Link</label><select name="classId"><option value="">No class</option>${state.classes.map(c => `<option value="${c.id}" ${c.id === existing?.classId ? "selected" : ""}>${c.date} Â· ${studentName(c.studentId)} Â· ${c.lesson || "Untitled class"}</option>`)}</select></div>
     ${textarea("body","Note", existing?.body || "")}
     <div class="actions wide"><button type="button" class="ghost-action" data-close>Cancel</button><button class="primary-action">Save Note</button></div>
   </form>`);
@@ -1112,7 +1108,7 @@ function setupSearch() {
 function searchAll(q) {
   const rows = [];
   state.students.forEach(s => rows.push({ type: "Students", id: s.id, title: s.name, text: `${s.platform} ${s.level} ${s.goal} ${s.weaknesses}` }));
-  state.classes.forEach(c => rows.push({ type: "Classes", id: c.id, title: `${studentName(c.studentId)} · ${c.lesson}`, text: `${c.topic} ${c.grammar} ${c.notes}` }));
+  state.classes.forEach(c => rows.push({ type: "Classes", id: c.id, title: `${studentName(c.studentId)} Â· ${c.lesson}`, text: `${c.topic} ${c.grammar} ${c.notes}` }));
   state.lessons.forEach(l => rows.push({ type: "Lessons", id: l.id, title: l.title, text: `${l.description} ${l.grammar} ${l.vocabulary} ${l.tags.join(" ")}` }));
   state.notes.forEach(n => rows.push({ type: "Notes", id: n.id, title: n.title || "Untitled note", text: `${n.body || ""} ${studentName(n.studentId)} ${n.classId || ""}` }));
   state.grammar.forEach(g => rows.push({ type: "Grammar", id: g.id, title: g.name, text: `${g.formula} ${g.use} ${g.mistake} ${g.tip}` }));
