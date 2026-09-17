@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESL Teacher OS</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">ET</div>
+          <div>
+            <h1>ESL Teacher OS</h1>
+            <p>Teaching workflow</p>
+          </div>
+        </div>
+        <nav id="nav" class="nav"></nav>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <button id="menuToggle" class="icon-button mobile-only" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="search-wrap">
+            <input id="globalSearch" type="search" placeholder="Search students, lessons, grammar, vocabulary..." />
+            <kbd>/</kbd>
+          </div>
+          <button class="primary-action" data-action="quick-log">Log Class</button>
+        </header>
+
+        <section id="searchResults" class="search-results hidden"></section>
+        <section id="view" class="view"></section>
+      </main>
+    </div>
+
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
