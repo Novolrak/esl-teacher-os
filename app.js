@@ -375,6 +375,7 @@ function render() {
   const views = { Dashboard: dashboardView, Students: studentsView, Classes: classesView, Lessons: lessonsView, Grammar: grammarView, Vocabulary: vocabularyView, Idioms: idiomsView, Notes: notesView, "Teaching Tools": toolsView, Reports: reportsView, Settings: settingsView };
   $("view").innerHTML = views[currentView]();
   bindView();
+  updateDashboardClock();
 }
 
 function dashboardView() {
@@ -383,18 +384,16 @@ function dashboardView() {
   const prepNeeded = todays.filter(c => !c.lesson || !c.topic || !c.grammar);
   const noteGaps = state.classes.filter(c => c.status === "Completed" && (!c.notes || !c.homework || !c.followup));
   return `
-    <div class="page-head">
-      <div><h2>Today</h2><p>Classes, quick actions, and the next teaching decision in one place.</p></div>
-      <button class="primary-action" data-action="quick-log">Post-Class Quick Log</button>
-    </div>
+    ${dashboardHero(todays, week, noteGaps, prepNeeded)}
     <div class="grid dashboard-metrics">
-      ${metric("Classes Today", todays.length)}
-      ${metric("Hours Today", hours(todays))}
-      ${metric("Classes This Week", week.length)}
-      ${metric("Lesson Library", state.lessons.length)}
-      ${metric("Need Notes", noteGaps.length)}
-      ${metric("Need Prep", prepNeeded.length)}
+      ${metric("Classes Today", todays.length, "Scheduled and active")}
+      ${metric("Hours Today", hours(todays), "Teaching time")}
+      ${metric("Classes This Week", week.length, "Weekly load")}
+      ${metric("Lesson Library", state.lessons.length, "Company lessons")}
+      ${metric("Need Notes", noteGaps.length, "Follow-ups")}
+      ${metric("Need Prep", prepNeeded.length, "Missing details")}
     </div>
+    ${dashboardWidgets(todays, week, prepNeeded, noteGaps)}
     <section class="panel dashboard-wide" style="margin-top:16px">
       <div class="section-head"><h3>Today's Classes</h3><button class="secondary-action" data-action="quick-log">Add Class</button></div>
       ${classTable(todays)}
@@ -424,7 +423,85 @@ function dashboardView() {
       <section class="panel dashboard-wide"><h3>Student Snapshot</h3><p class="panel-note">A quick summary pulled from each student profile and class history so you can remember what to review before class.</p><div class="brain-grid">${state.students.map(s => studentBrain(s)).join("")}</div></section>
     </div>`;
 }
-function metric(label, value) { return `<div class="panel metric"><strong>${value}</strong><span>${label}</span></div>`; }
+function dashboardHero(todays, week, noteGaps, prepNeeded) {
+  const next = nextClass(todays);
+  const completion = completionPercent(todays);
+  return `<section class="dashboard-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">ESL Teacher OS</span>
+      <h2>Welcome back, Teacher</h2>
+      <p>Your teaching day, student follow-ups, prep gaps, notes, and grammar decisions are all ready in one place.</p>
+      <div class="hero-actions">
+        <button class="primary-action" data-action="quick-log">Post-Class Quick Log</button>
+        <button class="hero-link" data-jump="Notes">Open Notes</button>
+      </div>
+    </div>
+    <div class="hero-profile">
+      <img src="assets/profile.jpg" alt="Teacher profile photo">
+      <div>
+        <b id="dashboardClock">${timeNow()}</b>
+        <span id="dashboardDate">${dateNow()}</span>
+      </div>
+    </div>
+    <div class="hero-stack">
+      <article><span>Next Class</span><b>${next ? `${next.start} Â· ${studentName(next.studentId)}` : "Clear"}</b><small>${next?.lesson || "No upcoming class left today"}</small></article>
+      <article><span>Today Progress</span><b>${completion}%</b><small>${todays.filter(c => c.status === "Completed").length} of ${todays.length || 0} classes completed</small></article>
+      <article><span>Teacher Alerts</span><b>${noteGaps.length + prepNeeded.length}</b><small>${noteGaps.length} note gaps Â· ${prepNeeded.length} prep gaps</small></article>
+    </div>
+  </section>`;
+}
+function dashboardWidgets(todays, week, prepNeeded, noteGaps) {
+  const next = nextClass(todays);
+  const common = countItems(state.students.flatMap(s => (s.grammar || []).map(g => g.topic)))[0];
+  const completed = week.filter(c => c.status === "Completed").length;
+  const sync = state.supabase?.url ? "Cloud sync configured" : "Cloud sync not configured";
+  return `<div class="dashboard-widgets">
+    <section class="widget-card">
+      <span class="widget-kicker">Focus</span>
+      <h3>${common?.label || "No grammar focus yet"}</h3>
+      <p>${common ? `${common.value} student flag${common.value === 1 ? "" : "s"} need attention.` : "Add student grammar goals to generate a focus queue."}</p>
+      <button class="ghost-action" data-jump="Grammar">Open Grammar</button>
+    </section>
+    <section class="widget-card">
+      <span class="widget-kicker">Readiness</span>
+      <h3>${prepNeeded.length ? `${prepNeeded.length} prep gaps` : "Ready to teach"}</h3>
+      <p>${prepNeeded.length ? "Some classes are missing lesson, topic, or grammar details." : "Today&apos;s classes have lesson details filled in."}</p>
+      <button class="ghost-action" data-jump="Classes">Review Classes</button>
+    </section>
+    <section class="widget-card">
+      <span class="widget-kicker">Notes</span>
+      <h3>${noteGaps.length ? `${noteGaps.length} follow-ups` : "Notes clean"}</h3>
+      <p>${noteGaps.length ? "Completed classes still need notes, homework, or next-topic entries." : "No completed classes need notes right now."}</p>
+      <button class="ghost-action" data-jump="Notes">Open Notes</button>
+    </section>
+    <section class="widget-card">
+      <span class="widget-kicker">Weekly Pulse</span>
+      <h3>${completed}/${week.length || 0} completed</h3>
+      <p>${next ? `Next: ${studentName(next.studentId)} at ${next.start}.` : sync}</p>
+      <button class="ghost-action" data-jump="Reports">Open Reports</button>
+    </section>
+  </div>`;
+}
+function metric(label, value, detail = "") { return `<div class="panel metric"><span>${label}</span><strong>${value}</strong>${detail ? `<small>${detail}</small>` : ""}</div>`; }
+function nextClass(classes) {
+  return classes.find(c => !["Completed", "Cancelled", "No-show"].includes(c.status));
+}
+function completionPercent(classes) {
+  if (!classes.length) return 0;
+  return Math.round((classes.filter(c => c.status === "Completed").length / classes.length) * 100);
+}
+function timeNow() {
+  return new Date().toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+function dateNow() {
+  return new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+}
+function updateDashboardClock() {
+  const clock = $("dashboardClock");
+  const date = $("dashboardDate");
+  if (clock) clock.textContent = timeNow();
+  if (date) date.textContent = dateNow();
+}
 function classTable(classes) {
   if (!classes.length) return `<div class="empty">No classes yet.</div>`;
   return `<div class="table-wrap"><table><thead><tr><th>Time</th><th>Student</th><th>Level</th><th>Platform</th><th>Lesson</th><th>Status</th><th>Actions</th></tr></thead><tbody>${classes.map(c => {
@@ -568,9 +645,115 @@ function grammarView() {
   <section class="panel" style="margin-top:16px">
     <h3>Explain It 3 Ways</h3>
     <div class="explain-toggle"><button class="${grammarMode === "technical" ? "active" : ""}" data-mode="technical">Technical</button><button class="${grammarMode === "teacher" ? "active" : ""}" data-mode="teacher">Teacher</button><button class="${grammarMode === "student" ? "active" : ""}" data-mode="student">Student</button></div>
-    <p class="card">${g.explain[grammarMode]}</p>
-    <h3>Practice Questions</h3>${g.practice.map(p => `<span class="tag">${p}</span>`).join("")}
+    ${explainThreeWays(g, grammarMode)}
   </section>`;
+}
+
+function explainThreeWays(g, mode) {
+  const examples = g.examples || [g.example].filter(Boolean);
+  const mainExample = examples[0] || `${g.name} example`;
+  const secondExample = examples[1] || mainExample;
+  const mistake = g.mistake || `Students may use the wrong form for ${g.name}.`;
+  const correction = correctionLine(mistake, mainExample);
+  const scenario = classroomScenario(g);
+  const data = {
+    technical: {
+      title: "Teacher Reference",
+      intro: `Use this when you need a clear grammar explanation before class. ${g.name} is about this meaning: ${g.what || g.use}`,
+      cards: [
+        ["Meaning", g.use || g.what || `Use ${g.name} to make the intended meaning clear.`],
+        ["Form", g.formula || "Check the selected grammar pattern."],
+        ["Contrast", `${g.name} is often confused with ${g.contrast || "a similar form"}. Teach the difference with two timelines, two contexts, or two short model sentences.`]
+      ],
+      script: `Board script: "${g.name} helps us show ${plainMeaning(g)}. The pattern is ${g.formula}. Compare: ${mainExample} / ${secondExample}"`,
+      repair: `Correction move: write the student's sentence, underline the exact problem, then ask: "Is the meaning finished, general, specific, or connected to now?"`,
+      tasks: [
+        `Ask for one controlled sentence using: ${g.formula}`,
+        `Ask the student to explain why ${mainExample} works.`,
+        `Ask for a contrast sentence using ${g.contrast || "a similar grammar point"}.`
+      ]
+    },
+    teacher: {
+      title: "Classroom Script",
+      intro: `Use this when you are teaching live and need simple words, examples, and a flow.`,
+      cards: [
+        ["Set The Scene", scenario],
+        ["Say This", `"We use ${g.name} when we want to ${plainMeaning(g)}. Look at this example: ${mainExample}"`],
+        ["Check Understanding", `"Is this about now, the past, a habit, a specific thing, or an imaginary situation? What word helped you know?"`]
+      ],
+      script: `Mini explanation: "First, notice the meaning. Then notice the form. Meaning first, grammar second. Now make it personal: change the subject, time, or situation."`,
+      repair: `Correction script: "Good idea. The meaning is clear, but the grammar form needs one change. Instead of the mistake pattern, say: ${correction}"`,
+      tasks: [
+        "Student repeats the model once.",
+        "Student changes one detail to make it true for them.",
+        "Student answers a follow-up question without reading."
+      ]
+    },
+    student: {
+      title: "Student-Friendly Explanation",
+      intro: `Use this wording directly with a learner who does not need grammar jargon.`,
+      cards: [
+        ["Simple Meaning", `${g.name} helps you say this idea more clearly: ${plainMeaning(g)}.`],
+        ["Easy Model", mainExample],
+        ["Real-Life Use", realLifeUse(g)]
+      ],
+      script: `"Don't memorize the rule first. Think about the situation. What do you want to say? Then use this pattern: ${g.formula}."`,
+      repair: `Gentle correction: "Almost. Try this version: ${correction}"`,
+      tasks: [
+        "Make one sentence about your work or daily life.",
+        "Make one negative sentence.",
+        "Ask me one question using this grammar."
+      ]
+    }
+  };
+  const chosen = data[mode] || data.teacher;
+  return `<div class="explain-panel">
+    <div class="explain-summary"><h4>${chosen.title}</h4><p>${chosen.intro}</p></div>
+    <div class="grid three">${chosen.cards.map(([title, body]) => `<article class="mini-card"><b>${title}</b><p>${body}</p></article>`).join("")}</div>
+    <div class="grid two" style="margin-top:14px">
+      <article class="teaching-script"><h4>Sample Explanation</h4><p>${chosen.script}</p></article>
+      <article class="teaching-script"><h4>Error Correction</h4><p>${chosen.repair}</p></article>
+    </div>
+    <h4>Try This In Class</h4>
+    <ul class="example-list">${chosen.tasks.map(task => `<li>${task}</li>`).join("")}</ul>
+  </div>`;
+}
+
+function plainMeaning(g) {
+  const use = (g.use || g.what || "").replace(/\.$/, "");
+  return use ? use.toLowerCase() : `use ${g.name.toLowerCase()} accurately`;
+}
+
+function classroomScenario(g) {
+  const name = g.name.toLowerCase();
+  if (/present perfect/i.test(g.name)) return "The student is talking about work experience, achievements, or things that started before now and still matter.";
+  if (/simple past/i.test(g.name)) return "The student is telling a finished story: yesterday's class, last week's meeting, a trip, or a customer problem.";
+  if (/article/i.test(g.name)) return "The student is describing workplace nouns and needs to choose between a general thing, one unknown thing, or one specific thing.";
+  if (/conditional/i.test(g.name)) return "The student is giving advice, imagining a result, or talking about what happens when a condition is true.";
+  if (/question/i.test(g.name)) return "The student needs to ask a clearer follow-up question in a conversation, interview, or roleplay.";
+  if (/preposition/i.test(g.name)) return "The student is describing time, place, direction, or topic and needs the natural connecting word.";
+  return `The student needs to use ${name} while speaking about work, study, travel, daily life, or a class roleplay.`;
+}
+
+function realLifeUse(g) {
+  if (/business|work|meeting|report|office/i.test(`${g.use} ${g.example}`)) return "Use it in meetings, emails, interviews, updates, and workplace small talk.";
+  if (/past|yesterday|last|before/i.test(`${g.use} ${g.example}`)) return "Use it when telling stories, explaining problems, or describing what happened.";
+  if (/future|will|going to|plan/i.test(`${g.use} ${g.example}`)) return "Use it for plans, predictions, promises, schedules, and future arrangements.";
+  if (/if|condition|would/i.test(`${g.use} ${g.example}`)) return "Use it for advice, possible results, imaginary situations, and regrets.";
+  return "Use it when you want your sentence to sound clearer, more natural, and easier to understand.";
+}
+
+function correctionLine(mistake, example) {
+  const commonFixes = [
+    [/third-person -s|he\/she\/it/i, "She works from home."],
+    [/finished time|yesterday|last week/i, "I saw him yesterday."],
+    [/article|a\/an|the/i, "I read a report. The report was useful."],
+    [/question order|auxiliary/i, "Could you tell me where the office is?"],
+    [/will in the if-clause/i, "If I have time, I will join."],
+    [/adjective form|adverb/i, "She speaks clearly."],
+    [/plural|uncountable/i, "I need some information."]
+  ];
+  return commonFixes.find(([pattern]) => pattern.test(mistake))?.[1] || example || "Use the correct form from the model sentence.";
 }
 
 function vocabularyView() {
@@ -1143,3 +1326,4 @@ $("menuToggle").addEventListener("click", () => document.querySelector(".sidebar
 $("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
 setupSearch();
 render();
+setInterval(updateDashboardClock, 1000);
