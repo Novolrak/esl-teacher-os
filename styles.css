@@ -106,9 +106,7 @@ main { min-width: 0; }
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.dashboard-metrics {
-  grid-template-columns: repeat(6, minmax(160px, 1fr));
-}
+.dashboard-metrics { grid-template-columns: repeat(6, minmax(160px, 1fr)); margin-top: 16px; }
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -146,9 +144,157 @@ main { min-width: 0; }
   line-height: 1.45;
   max-width: 760px;
 }
-.metric { display: grid; gap: 6px; }
-.metric strong { font-size: 28px; }
-.metric span { color: var(--muted); font-size: 13px; }
+.dashboard-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) 300px 360px;
+  gap: 18px;
+  align-items: stretch;
+  min-height: 260px;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #cdd9df;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, .94), rgba(23, 32, 38, .96)),
+    radial-gradient(circle at 85% 20%, rgba(244, 185, 66, .25), transparent 30%);
+  color: white;
+  box-shadow: 0 18px 50px rgba(23, 32, 38, .16);
+  overflow: hidden;
+}
+.hero-copy {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+.eyebrow,
+.widget-kicker {
+  color: #f4b942;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.hero-copy h2 {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.02;
+}
+.hero-copy p {
+  margin: 0;
+  max-width: 720px;
+  color: rgba(255,255,255,.82);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hero-link {
+  border: 1px solid rgba(255,255,255,.26);
+  background: rgba(255,255,255,.12);
+  color: white;
+  border-radius: 7px;
+  padding: 11px 14px;
+  font-weight: 800;
+}
+.hero-profile {
+  display: grid;
+  align-content: end;
+  gap: 14px;
+}
+.hero-profile img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center 34%;
+  border-radius: 12px;
+  border: 3px solid rgba(255,255,255,.24);
+  box-shadow: 0 16px 35px rgba(0,0,0,.24);
+}
+.hero-profile div {
+  display: grid;
+  gap: 3px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+}
+.hero-profile b {
+  font-size: 28px;
+}
+.hero-profile span {
+  color: rgba(255,255,255,.78);
+}
+.hero-stack {
+  display: grid;
+  gap: 12px;
+}
+.hero-stack article {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.18);
+}
+.hero-stack span {
+  color: rgba(255,255,255,.72);
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+.hero-stack b {
+  font-size: 20px;
+}
+.hero-stack small {
+  color: rgba(255,255,255,.74);
+  line-height: 1.35;
+}
+.metric {
+  display: grid;
+  gap: 7px;
+  min-height: 116px;
+  align-content: center;
+  border-top: 4px solid var(--accent);
+}
+.metric strong { font-size: 30px; line-height: 1; }
+.metric span { color: var(--muted); font-size: 13px; font-weight: 800; }
+.metric small { color: var(--muted); line-height: 1.35; }
+.dashboard-widgets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.widget-card {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-height: 184px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+.widget-card h3 {
+  margin: 0;
+  font-size: 20px;
+}
+.widget-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.widget-card button {
+  justify-self: start;
+  align-self: end;
+  margin-top: 4px;
+}
+.widget-kicker {
+  color: var(--accent);
+}
 .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: white; }
 table { width: 100%; border-collapse: collapse; min-width: 980px; }
 th, td { padding: 16px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; line-height: 1.35; }
@@ -243,6 +389,42 @@ tr:last-child td { border-bottom: 0; }
 .explain-toggle button { border: 0; border-right: 1px solid var(--line); padding: 10px; background: white; font-weight: 800; }
 .explain-toggle button:last-child { border-right: 0; }
 .explain-toggle button.active { background: #172026; color: white; }
+.explain-panel {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+.explain-summary {
+  border-left: 4px solid var(--accent);
+  padding: 10px 14px;
+  background: #f4fbf9;
+}
+.explain-summary h4,
+.teaching-script h4,
+.explain-panel h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+.explain-summary p,
+.teaching-script p,
+.mini-card p {
+  margin: 0;
+  line-height: 1.5;
+}
+.mini-card,
+.teaching-script {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: white;
+}
+.mini-card b {
+  display: block;
+  margin-bottom: 8px;
+}
+.teaching-script {
+  background: #fbfcfd;
+}
 .progress-row { display: grid; grid-template-columns: minmax(130px, 180px) 1fr 48px; align-items: center; gap: 14px; margin: 12px 0; }
 .bar { height: 9px; background: var(--soft); border-radius: 999px; overflow: hidden; }
 .bar span { display: block; height: 100%; background: var(--accent-3); }
@@ -355,7 +537,12 @@ tr:last-child td { border-bottom: 0; }
   .mobile-only { display: grid; }
   .topbar { padding: 12px; }
   .view { padding: 16px; }
-  .grid.two, .grid.three, .grid.four, .dashboard-metrics, .dashboard-grid, .brain-grid, .split, .entry-layout { grid-template-columns: 1fr; }
+  .grid.two, .grid.three, .grid.four, .dashboard-metrics, .dashboard-grid, .dashboard-widgets, .brain-grid, .split, .entry-layout { grid-template-columns: 1fr; }
+  .dashboard-hero { grid-template-columns: 1fr; min-height: 0; padding: 18px; }
+  .hero-copy h2 { font-size: 34px; }
+  .hero-profile { grid-template-columns: 96px 1fr; align-items: center; }
+  .hero-profile img { width: 96px; }
+  .hero-stack { grid-template-columns: 1fr; }
   .mini-row { grid-template-columns: 1fr; gap: 4px; }
   table { min-width: 860px; }
   .grammar-tree { grid-template-columns: 1fr; }
